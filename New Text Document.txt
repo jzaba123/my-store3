@@ -1,0 +1,25 @@
+Enter your
+Email 
+Phone number
+
+Enter your shipping address.
+First Name
+Last Name
+Street address 
+Apt / Suite / Other (optional)
+Zip code 
+City 
+State 
+Country 
+
+
+Enter your billing address.
+First Name
+Last Name
+Street address 
+Apt / Suite / Other (optional)
+Zip code 
+City 
+State 
+Country 
+
