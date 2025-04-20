@@ -6,7 +6,6 @@ $(".target").on("click", function() {
     if ($button.text() == '+') {
         newVal = oldVal + 1;
     }
-
     else {
         if (oldVal > 0) {
             newVal = oldVal - 1;
@@ -17,29 +16,27 @@ $(".target").on("click", function() {
     }
 
     $button.parent().find("input").val(newVal);
+    
+    // Show or hide guest checkout button based on quantity
+    if (newVal > 0) {
+        $button.closest('form').find('.guest-checkout').show();
+    } else {
+        $button.closest('form').find('.guest-checkout').hide();
+    }
 });
-
-
-
-
 
 $('.addToCart').on("click", function(event) {
-    console.log('hello');
-    if($(this).prev().prev().prev().find("input").val() == '0') {
+    // Get the quantity input value
+    let quantity = $(this).closest('form').find('.quantity').val();
+    
+    if(quantity == '0') {
         event.preventDefault();
-        $(this).next().next().next().html("You need to select at least one shirt.");
-        $(this).next().next().next().css("display", "block");
-        $(this).next().next().next().delay(3000).slideUp();
+        let flashMessage = $(this).siblings('.flashMessage');
+        flashMessage.html("You need to select at least one item.");
+        flashMessage.css("display", "block");
+        flashMessage.delay(3000).slideUp();
     }
-
-    if ($(this).prev().val() == "0") {
-            event.preventDefault();
-            $(this).next().next().next().html("You need to log in to buy.");
-            $(this).next().next().next().css("display", "block");
-            $(this).next().next().next().delay(3000).slideUp();
-        }
 });
-
 
 $(".flashMessage").delay(3000).slideUp();
 

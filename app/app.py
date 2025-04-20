@@ -1,3 +1,5 @@
+# C:/Users/jirim/anaconda3/envs/OpenAI/python.exe
+
 from cs50 import SQL
 from flask_session import Session
 from flask import Flask, render_template, redirect, request, session
@@ -15,7 +17,7 @@ DEBUG = True
 
 # https://store4.ploomberapp.io/static/img/argentina.png
 # https://store4.ploomberapp.io/
-# flask_6-My-Soccer-Store
+# flask_6-My-Chocolate-Store
 
 # 411111111111
 # 05/29
@@ -36,7 +38,6 @@ Session(app)
 
 # Creates a connection to the database
 db = SQL ( "sqlite:///data.db" )
-#db = SQL("sqlite:///C:/Users/jirim/OneDrive/Documents/Jiri2024/EDUCATION/ploomber/STORE-3/app/data.db")
 
 @app.route("/")
 def index():
@@ -65,33 +66,33 @@ def buy():
     shopLen = len(shoppingCart)
     totItems, total, display = 0, 0, 0
     qty = int(request.args.get('quantity'))
-    if session:
-        # Store id of the selected shirt
-        id = int(request.args.get('id'))
-        # Select info of selected shirt from database
-        goods = db.execute("SELECT * FROM shirts WHERE id = :id", id=id)
-        # Extract values from selected shirt record
-        # Check if shirt is on sale to determine price
-        if(goods[0]["onSale"] == 1):
-            price = goods[0]["onSalePrice"]
-        else:
-            price = goods[0]["price"]
-        team = goods[0]["team"]
-        image = goods[0]["image"]
-        subTotal = qty * price
-        # Insert selected shirt into shopping cart
-        db.execute("INSERT INTO cart (id, qty, team, image, price, subTotal) VALUES (:id, :qty, :team, :image, :price, :subTotal)", id=id, qty=qty, team=team, image=image, price=price, subTotal=subTotal)
-        shoppingCart = db.execute("SELECT team, image, SUM(qty), SUM(subTotal), price, id FROM cart GROUP BY team")
-        shopLen = len(shoppingCart)
-        # Rebuild shopping cart
-        for i in range(shopLen):
-            total += shoppingCart[i]["SUM(subTotal)"]
-            totItems += shoppingCart[i]["SUM(qty)"]
-        # Select all shirts for home page view
-        shirts = db.execute("SELECT * FROM shirts ORDER BY team ASC")
-        shirtsLen = len(shirts)
-        # Go back to home page
-        return render_template ("index.html", shoppingCart=shoppingCart, shirts=shirts, shopLen=shopLen, shirtsLen=shirtsLen, total=total, totItems=totItems, display=display, session=session )
+    
+    # Store id of the selected shirt
+    id = int(request.args.get('id'))
+    # Select info of selected shirt from database
+    goods = db.execute("SELECT * FROM shirts WHERE id = :id", id=id)
+    # Extract values from selected shirt record
+    # Check if shirt is on sale to determine price
+    if(goods[0]["onSale"] == 1):
+        price = goods[0]["onSalePrice"]
+    else:
+        price = goods[0]["price"]
+    team = goods[0]["team"]
+    image = goods[0]["image"]
+    subTotal = qty * price
+    # Insert selected shirt into shopping cart
+    db.execute("INSERT INTO cart (id, qty, team, image, price, subTotal) VALUES (:id, :qty, :team, :image, :price, :subTotal)", id=id, qty=qty, team=team, image=image, price=price, subTotal=subTotal)
+    shoppingCart = db.execute("SELECT team, image, SUM(qty), SUM(subTotal), price, id FROM cart GROUP BY team")
+    shopLen = len(shoppingCart)
+    # Rebuild shopping cart
+    for i in range(shopLen):
+        total += shoppingCart[i]["SUM(subTotal)"]
+        totItems += shoppingCart[i]["SUM(qty)"]
+    # Select all shirts for home page view
+    shirts = db.execute("SELECT * FROM shirts ORDER BY team ASC")
+    shirtsLen = len(shirts)
+    # Go back to home page
+    return render_template ("index.html", shoppingCart=shoppingCart, shirts=shirts, shopLen=shopLen, shirtsLen=shirtsLen, total=total, totItems=totItems, display=display)
 
 
 @app.route("/update/")
@@ -174,7 +175,20 @@ from flask import render_template
 @app.route("/checkout/", methods=["GET", "POST"])
 def checkout():
     if request.method == "GET":
-        return render_template("checkout.html")
+        # Get cart items for display on checkout page
+        shoppingCart = db.execute("SELECT team, image, SUM(qty), SUM(subTotal), price, id FROM cart GROUP BY team")
+        shopLen = len(shoppingCart)
+        total = sum(item["SUM(subTotal)"] for item in shoppingCart)
+        totItems = sum(item["SUM(qty)"] for item in shoppingCart)
+        
+        return render_template(
+            "checkout.html",
+            shopLen=shopLen,
+            shoppingCart=shoppingCart,
+            total=total,
+            totItems=totItems
+        )
+    
 
     elif request.method == "POST":
         card_number = request.form["cardNumber"]
@@ -229,10 +243,33 @@ def checkout():
             db.execute("DELETE FROM cart")
         
             # Construct message including correlation ID
-            success_message = f"Thank you for your order! Your payment was successful. Correlation ID: {correlation_id}"
+            #success_message = f"Thank you for your order! Your payment was successful. Correlation ID: {correlation_id}"
         
-            return render_template("success.html", message=success_message)          
-
+            import time
+            order_id = int(time.time() * 1_000_000)  # Unique Order ID based on timestamp        
+        
+            success_message = f"Thank you for your order! Your payment was successful."
+            
+            return render_template(
+                "success.html",
+                message=success_message,
+                order_id=order_id,
+                shopLen=0,
+                shoppingCart=[],
+                total=0.00,
+                totItems=0
+            )            
+        
+            #return render_template("success.html", message=success_message)
+            #return render_template(
+            #    "success.html",
+            #    message=success_message,
+            #    shopLen=0,
+            #    shoppingCart=[],
+            #    total=0.00,
+            #    totItems=0
+            #)
+            
         return render_template("checkout.html", error="Payment failed. Please try again.")
 
 
@@ -340,18 +377,51 @@ def registration():
 
 @app.route("/cart/")
 def cart():
-    if 'user' in session:
-        # Clear shopping cart variables
-        totItems, total, display = 0, 0, 0
-        # Grab info currently in database
-        shoppingCart = db.execute("SELECT team, image, SUM(qty), SUM(subTotal), price, id FROM cart GROUP BY team")
-        # Get variable values
-        shopLen = len(shoppingCart)
-        for i in range(shopLen):
-            total += shoppingCart[i]["SUM(subTotal)"]
-            totItems += shoppingCart[i]["SUM(qty)"]
+    # Initialize shopping cart variables for all users
+    shoppingCart = []
+    shopLen = 0
+    totItems, total, display = 0, 0, 0
+    
+    # Grab info currently in database
+    shoppingCart = db.execute("SELECT team, image, SUM(qty), SUM(subTotal), price, id FROM cart GROUP BY team")
+    # Get variable values
+    shopLen = len(shoppingCart)
+    for i in range(shopLen):
+        total += shoppingCart[i]["SUM(subTotal)"]
+        totItems += shoppingCart[i]["SUM(qty)"]
+        
     # Render shopping cart
     return render_template("cart.html", shoppingCart=shoppingCart, shopLen=shopLen, total=total, totItems=totItems, display=display, session=session)
+
+
+@app.route("/return-policy/")
+def return_policy():
+    # Initialize shopping cart variables for consistent navbar display
+    shoppingCart = db.execute("SELECT team, image, SUM(qty), SUM(subTotal), price, id FROM cart GROUP BY team")
+    shopLen = len(shoppingCart)
+    total = sum(item["SUM(subTotal)"] for item in shoppingCart) if shopLen > 0 else 0
+    totItems = sum(item["SUM(qty)"] for item in shoppingCart) if shopLen > 0 else 0
+    
+    return render_template("return_policy.html", 
+                         shoppingCart=shoppingCart, 
+                         shopLen=shopLen, 
+                         total=total, 
+                         totItems=totItems)
+
+
+@app.route("/shipping-policy/")
+def shipping_policy():
+    # Initialize shopping cart variables for consistent navbar display
+    shoppingCart = db.execute("SELECT team, image, SUM(qty), SUM(subTotal), price, id FROM cart GROUP BY team")
+    shopLen = len(shoppingCart)
+    total = sum(item["SUM(subTotal)"] for item in shoppingCart) if shopLen > 0 else 0
+    totItems = sum(item["SUM(qty)"] for item in shoppingCart) if shopLen > 0 else 0
+    
+    return render_template("shipping_policy.html", 
+                         shoppingCart=shoppingCart, 
+                         shopLen=shopLen, 
+                         total=total, 
+                         totItems=totItems)
 
 
 # @app.errorhandler(404)

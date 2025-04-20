@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+Shipping Policy
+{% endblock %}
+
+{% block body %}
+<main class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="text-center mb-0">Shipping Policy</h2>
+        </div>
+        <div class="card-body">
+          <h4>Our Shipping Methods</h4>
+          <p>We offer several shipping options to meet your needs:</p>
+          
+          <ul class="mt-3">
+            <li><strong>Standard Shipping (5-7 business days)</strong>
+              <ul>
+                <li>Free for orders over $50</li>
+                <li>$5.99 for orders under $50</li>
+              </ul>
+            </li>
+            <li><strong>Express Shipping (2-3 business days)</strong>
+              <ul>
+                <li>$12.99 flat rate</li>
+                <li>Free for orders over $100</li>
+              </ul>
+            </li>
+            <li><strong>Next Day Delivery</strong>
+              <ul>
+                <li>$24.99 flat rate</li>
+                <li>Order must be placed before 2 PM EST</li>
+              </ul>
+            </li>
+          </ul>
+
+          <h5 class="mt-4">Processing Time</h5>
+          <ul>
+            <li>Orders are processed within 24 hours Monday-Friday</li>
+            <li>Orders placed after 2 PM EST will be processed the next business day</li>
+            <li>Orders placed on weekends will be processed on Monday</li>
+          </ul>
+
+          <div class="alert alert-info mt-4">
+            <strong>International Shipping:</strong> Currently, we only ship within the United States and Canada. For Canadian orders, additional customs fees may apply.
+          </div>
+
+          <h5 class="mt-4">Tracking Your Order</h5>
+          <p>Once your order ships:</p>
+          <ul>
+            <li>You'll receive a shipping confirmation email</li>
+            <li>Tracking number will be provided</li>
+            <li>Track your package through our website or carrier's site</li>
+            <li>Email updates at key shipping milestones</li>
+          </ul>
+
+          <div class="text-center mt-4">
+            <a href="/" class="btn btn-primary">Return to Home</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %} 

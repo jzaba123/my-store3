@@ -19,8 +19,8 @@ db = SQL("sqlite:///data.db")
 
 @app.route("/")
 def index():
-    wines = db.execute("SELECT * FROM wines ORDER BY country ASC")
-    winesLen = len(wines)
+    Chocolates = db.execute("SELECT * FROM Chocolates ORDER BY country ASC")
+    ChocolatesLen = len(Chocolates)
     shoppingCart = []
     shopLen = len(shoppingCart)
     totItems, total, display = 0, 0, 0
@@ -30,10 +30,10 @@ def index():
         for i in range(shopLen):
             total += shoppingCart[i]["SUM(subTotal)"]
             totItems += shoppingCart[i]["SUM(qty)"]
-        wines = db.execute("SELECT * FROM wines ORDER BY country ASC")
-        winesLen = len(wines)
-        return render_template("index.html", shoppingCart=shoppingCart, wines=wines, shopLen=shopLen, winesLen=winesLen, total=total, totItems=totItems, display=display, session=session)
-    return render_template("index.html", wines=wines, shoppingCart=shoppingCart, winesLen=winesLen, shopLen=shopLen, total=total, totItems=totItems, display=display)
+        Chocolates = db.execute("SELECT * FROM Chocolates ORDER BY country ASC")
+        ChocolatesLen = len(Chocolates)
+        return render_template("index.html", shoppingCart=shoppingCart, Chocolates=Chocolates, shopLen=shopLen, ChocolatesLen=ChocolatesLen, total=total, totItems=totItems, display=display, session=session)
+    return render_template("index.html", Chocolates=Chocolates, shoppingCart=shoppingCart, ChocolatesLen=ChocolatesLen, shopLen=shopLen, total=total, totItems=totItems, display=display)
 
 @app.route("/buy/")
 def buy():
@@ -43,7 +43,7 @@ def buy():
     qty = int(request.args.get('quantity'))
     if session:
         id = int(request.args.get('id'))
-        goods = db.execute("SELECT * FROM wines WHERE id = :id", id=id)
+        goods = db.execute("SELECT * FROM Chocolates WHERE id = :id", id=id)
         price = goods[0]["onSalePrice"] if goods[0]["onSale"] == 1 else goods[0]["price"]
         country = goods[0]["country"]
         image = goods[0]["image"]
@@ -55,9 +55,9 @@ def buy():
         for i in range(shopLen):
             total += shoppingCart[i]["SUM(subTotal)"]
             totItems += shoppingCart[i]["SUM(qty)"]
-        wines = db.execute("SELECT * FROM wines ORDER BY country ASC")
-        winesLen = len(wines)
-        return render_template("index.html", shoppingCart=shoppingCart, wines=wines, shopLen=shopLen, winesLen=winesLen, total=total, totItems=totItems, display=display, session=session)
+        Chocolates = db.execute("SELECT * FROM Chocolates ORDER BY country ASC")
+        ChocolatesLen = len(Chocolates)
+        return render_template("index.html", shoppingCart=shoppingCart, Chocolates=Chocolates, shopLen=shopLen, ChocolatesLen=ChocolatesLen, total=total, totItems=totItems, display=display, session=session)
 
 @app.route("/cart/")
 def cart():

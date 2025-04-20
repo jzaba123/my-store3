@@ -108,3 +108,13 @@ tr {
         border: 1px solid #222;
         
 }
+
+.guest-checkout-btn {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.guest-checkout-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}

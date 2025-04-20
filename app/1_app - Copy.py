@@ -15,7 +15,7 @@ DEBUG = True
 
 # https://store4.ploomberapp.io/static/img/argentina.png
 # https://store4.ploomberapp.io/
-# flask_6-My-Soccer-Store
+# flask_6-My-Chocolate-Store
 
 # 411111111111
 # 05/29

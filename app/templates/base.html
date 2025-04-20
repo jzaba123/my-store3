@@ -37,7 +37,7 @@
                       <tr>
                         <th scope="col">#</th>
                         <th scope="col">Item</th>
-                        <th scope="col">Detail</th>
+                        <th scope="col">Team</th>
                         <th scope="col">Quantity</th>
                         <th scope="col">Unit Price</th>
                         <th scope="col">Sub-Total</th>
@@ -46,49 +46,44 @@
                     </thead>
                     <tbody>
                     <!-- For Each shirt -->
-                    {% if shopLen != 0 %}
-                    {% for i in range(shopLen) %}
-                      <tr>
-                        <th scope="row">{{ i + 1 }}</th>
-                        <td><img src="/static/img/{{ shoppingCart[i]["image"] }}" width="30px" alt="{{ shoppingCart[i]["team"] }}" /></td>
-                        <td>{{ shoppingCart[i]["team"] }}</td>
-                        <td>{{ shoppingCart[i]['SUM(qty)'] }}</td>
-                        <td>{{ '${:,.2f}'.format(shoppingCart[i]["price"]) }}</td>
-                        <td>{{ '${:,.2f}'.format(shoppingCart[i]['SUM(subTotal)']) }}</td><!--
-                        <td>
-                          <form action="/remove/" methods="GET">
-                            <input type="hidden" name="id" value="{{ shoppingCart[i]["id"] }}" />
-                            <button type="submit" class="btn btn-secondary btn-sm" id="removeFromCart">Remove</button>
-                          </form>
-                        </td>-->
-                      </tr>
-                    </tbody>
-                    {% endfor %}
-                    <tfoot>
-                      <tr>
-                        <td colSpan="7">Total: {{ '${:,.2f}'.format(total) }}<br /><br />
-                          <div class="modal-footer">
-                            <a href="/cart/"><button type="button" class="btn btn-primary checkout">Make Changes</button></a>
-                            <button type="button" class="btn btn-primary checkout" data-dismiss="modal">Continue Shopping</button>
-                            <a href="/checkout/"><button type="button" class="btn btn-success checkout">Quick Checkout</button></a>
-                          </div>
-                        </td>
-                      </tr>
-                    </tfoot>
-                    {% else %}
-                      <tr>
-                        <td colSpan="7"><h3>Your cart is empty :\</h3></td>
-                      </tr>
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <td colSpan="7">Get some shirts now!<br />
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Continue Shopping</button>
-                          </div>
-                        </td>
-                      </tr>
-                    </tfoot>
+                      {% if shopLen is defined and shopLen != 0 %}
+                        {% for i in range(shopLen) %}
+                          <tr>
+                            <th scope="row">{{ i + 1 }}</th>
+                            <td><img src="/static/img/{{ shoppingCart[i]["image"] }}" width="30px" alt="{{ shoppingCart[i]["team"] }}" /></td>
+                            <td>{{ shoppingCart[i]["team"] }}</td>
+                            <td>{{ shoppingCart[i]['SUM(qty)'] }}</td>
+                            <td>{{ '${:,.2f}'.format(shoppingCart[i]["price"]) }}</td>
+                            <td>{{ '${:,.2f}'.format(shoppingCart[i]['SUM(subTotal)']) }}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colSpan="7">
+                            Total: {{ '${:,.2f}'.format(total) }}<br /><br />
+                            <div class="modal-footer">
+                              <a href="/cart/"><button type="button" class="btn btn-primary checkout">Make Changes</button></a>
+                              <button type="button" class="btn btn-primary checkout" data-dismiss="modal">Continue Shopping</button>
+                              <a href="/checkout/"><button type="button" class="btn btn-success checkout">Quick Checkout</button></a>
+                            </div>
+                          </td>
+                        </tr>
+                      </tfoot>
+                      {% else %}
+                        <tr>
+                          <td colSpan="7"><h3>Your cart is empty :\</h3></td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colSpan="7">Get some shirts now!<br />
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-primary" data-dismiss="modal">Continue Shopping</button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tfoot>
                     {% endif %}
                   </table>
                 </div>
@@ -99,10 +94,63 @@
       </div>
     </div>
   </div>
+  <!-- Add this right after your existing shopping cart modal -->
+  <div class="modal fade" id="returnPolicyModal" tabindex="-1" role="dialog" aria-labelledby="returnPolicyModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="returnPolicyModalTitle">Return Policy</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <h4>Our Return Policy</h4>
+                <p>We want you to be completely satisfied with your purchase. If you're not happy with your order, we accept returns within:</p>
+                
+                <ul class="mt-3">
+                  <li>30 days of delivery for unworn items</li>
+                  <li>Items must be in original condition with tags attached</li>
+                  <li>Original packaging must be intact</li>
+                </ul>
+
+                <h5 class="mt-4">How to Return</h5>
+                <ol>
+                  <li>Contact our customer service</li>
+                  <li>Get a Return Authorization Number (RMA)</li>
+                  <li>Pack the item securely</li>
+                  <li>Include the original order number</li>
+                </ol>
+
+                <div class="alert alert-info mt-4">
+                  <strong>Note:</strong> Shipping costs for returns are the responsibility of the customer unless the item received was defective or incorrect.
+                </div>
+
+                <h5 class="mt-4">Refund Process</h5>
+                <p>Once we receive your return:</p>
+                <ul>
+                  <li>We'll inspect the item within 2 business days</li>
+                  <li>Refund will be processed to original payment method</li>
+                  <li>You'll receive an email confirmation</li>
+                  <li>Please allow 5-10 business days for the refund to appear</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <header>
     <nav class="navbar fixed-top navbar-dark bg-dark navbar-expand-sm box-shadow">
       <a href="/" class="navbar-brand d-flex align-items-center">
-          <strong><i class="far fa-futbol"></i>My Wine Store</strong>
+          <strong><i class="far fa-futbol"></i>My Chocolate Store</strong>
       </a>
       {% if session %}
       <ul class="navbar-nav mr-auto">
@@ -112,7 +160,6 @@
       <ul class="navbar-nav mr-auto">
         <li class="nav-item"><a href="/new/" class="nav-link">Register</a></li>
         <li class="nav-item"><a href="/login/" class="nav-link">Login</a></li>
-
       {% endif %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
@@ -129,6 +176,9 @@
         </li>
       </ul>
       <div>
+        <button type="button" class="btn btn-secondary mr-2 guest-checkout-btn" {% if not totItems or totItems == 0 %}disabled{% endif %} onclick="window.location.href='{{ url_for('checkout') }}'">
+          Guest Checkout
+        </button>
         <button class="navbar-toggler" style="display:inline" type="button" data-toggle="modal" data-target="#modalCenter">
           <span class="glyphicon glyphicon-shopping-cart" data-toggle="modal" data-target="">
             <i class="fas fa-shopping-cart"></i>
@@ -152,7 +202,11 @@
             <div class="row">
                 <div class="col-md">
                     <hr />
-                    <p>&#169; <a href="/">My Wine Store</a></p>
+                    <p>
+                        &#169; <a href="/">My Chocolate Store</a> | 
+                        <a href="{{ url_for('return_policy') }}">Return Policy</a> | 
+                        <a href="{{ url_for('shipping_policy') }}">Shipping Policy</a>
+                    </p>
                 </div>
             </div>
         </div>
